@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Étudie le Français 🐸</title>
+<link rel="stylesheet" href="css.css">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">french<br>study hub</div>
+  <button class="nav-btn active" onclick="showSection('home',this)">🏠 home</button>
+  <button class="nav-btn" onclick="showSection('flashcards',this)">🃏 cards</button>
+  <button class="nav-btn" onclick="showSection('notes',this)">📝 notes</button>
+  <button class="nav-btn" onclick="showSection('dictionary',this)">📖 dict</button>
+  <button class="nav-btn" onclick="showSection('quiz',this)">🎯 quiz</button>
+  <button class="nav-btn" onclick="showSection('room',this)">🌿 room</button>
+  <button class="nav-btn" onclick="showSection('chat',this)">🐸 tutor</button>
+</nav>
+
+<!-- PET WIDGET -->
+<div id="pet-widget" onclick="togglePetBubble()">
+  <div class="pet-bubble" id="pet-bubble">bonjour! study with me 🐸</div>
+  <div id="frog">🐸</div>
+  <div class="xp-bar-wrap"><div class="xp-bar" id="xp-bar"></div></div>
+  <div class="xp-label" id="xp-label">LV 1 — 0 XP</div>
+</div>
+<div class="xp-toast" id="xp-toast">+10 XP!</div>
+
+<!-- REWARD MODAL -->
+<div class="reward-modal" id="reward-modal">
+  <div class="reward-box">
+    <span class="reward-frog" id="reward-frog-display">🐸</span>
+    <div class="reward-title" id="reward-title">level up!</div>
+    <div style="font-size:0.75rem;color:var(--sage-dark);margin-bottom:0.5rem" id="reward-cos-label">new look unlocked!</div>
+    <p class="reward-msg" id="reward-msg-preview">keep going!</p>
+    <button class="reward-close" onclick="closeReward()">merci! 🤍</button>
+  </div>
+</div>
+
+<!-- ── HOME ── -->
+<div class="section active" id="section-home">
+<div class="section-inner">
+  <div class="welcome-banner">
+    <div class="welcome-title">bienvenue 🐸<br>let's learn some French</div>
+    <p class="welcome-sub">flashcards, a dictionary, quizzes, and a cozy study room.</p>
+    <p><strong>Frog</strong> is here to study with you every step of the way. tu peux le faire! 💚</p>
+  </div>
+
+  <div class="home-grid">
+    <div class="home-card" onclick="showSection('flashcards',null)">
+      <span class="hc-icon">🃏</span>
+      <div class="hc-title">Flashcards</div>
+      <div class="hc-sub">flip & learn vocab fast</div>
+    </div>
+    <div class="home-card" onclick="showSection('notes',null)">
+      <span class="hc-icon">📝</span>
+      <div class="hc-title">Smart Notes</div>
+      <div class="hc-sub">type & get translations</div>
+    </div>
+    <div class="home-card" onclick="showSection('dictionary',null)">
+      <span class="hc-icon">📖</span>
+      <div class="hc-title">Dictionary</div>
+      <div class="hc-sub">search any word instantly</div>
+    </div>
+    <div class="home-card" onclick="showSection('quiz',null)">
+      <span class="hc-icon">🎯</span>
+      <div class="hc-title">Quiz me</div>
+      <div class="hc-sub">test yourself + earn XP</div>
+    </div>
+    <div class="home-card" onclick="showSection('room',null)">
+      <span class="hc-icon">🌿</span>
+      <div class="hc-title">Study Room</div>
+      <div class="hc-sub">a cozy focus timer room</div>
+    </div>
+  </div>
+
+  <div class="card tipcard">
+    <div style="font-family:'Press Start 2P',monospace;font-size:0.4rem;color:#c8840a;margin-bottom:0.5rem">🐸 tip</div>
+    <p style="font-size:0.85rem;line-height:1.7;font-style:italic">learning a language is a marathon, not a sprint. a little bit every day beats cramming once a week. tu peux le faire! 💚</p>
+  </div>
+</div>
+</div>
+
+<!-- ── FLASHCARDS ── -->
+<div class="section" id="section-flashcards">
+<div class="section-inner">
+  <div class="s-header">
+    <div class="s-title">Flashcards 🃏</div>
+  </div>
+  <div class="fc-category-btns" id="cat-btns"></div>
+  <p class="fc-progress" id="fc-progress">card 1 of 1</p>
+  <div class="flashcard-wrap" onclick="flipCard()">
+    <div class="flashcard" id="flashcard">
+      <div class="fc-face">
+        <div class="fc-hint">[ tap to reveal translation ]</div>
+        <div class="fc-emoji" id="fc-emoji">🇫🇷</div>
+        <div class="fc-word" id="fc-word">Bonjour</div>
+      </div>
+      <div class="fc-face fc-back">
+        <div class="fc-emoji" id="fc-emoji-back">👋</div>
+        <div class="fc-translation" id="fc-translation">Hello / Good day</div>
+        <div class="fc-example" id="fc-example">Bonjour, comment tu t'appelles?</div>
+      </div>
+    </div>
+  </div>
+  <div class="fc-controls">
+    <button class="fc-btn wrong" onclick="rateCard(false)">✗ again</button>
+    <button class="fc-btn flip" onclick="flipCard()">↩ flip</button>
+    <button class="fc-btn correct" onclick="rateCard(true)">✓ got it</button>
+  </div>
+</div>
+</div>
+
+<!-- ── NOTES ── -->
+<div class="section" id="section-notes">
+<div class="section-inner">
+  <div class="s-header">
+    <div class="s-eyebrow">MY NOTEBOOK</div>
+    <div class="s-title">Notes 📝</div>
+  </div>
+
+  <div class="notes-app">
+    <div class="notes-sidebar">
+      <button class="notes-new-btn" onclick="createNewNote()">+ new note</button>
+      <input type="text" class="notes-search" id="notes-search" placeholder="🔍 search notes..." oninput="renderNotesList(this.value)">
+      <div class="notes-list" id="notes-list"></div>
+    </div>
+
+    <div class="notes-main">
+      <input type="text" class="note-title-input" id="note-title" placeholder="untitled note 🐸" oninput="onNoteEdit()">
+      <div class="note-meta" id="note-meta">0 words</div>
+
+      <div class="paper-wrap">
+        <div class="paper-margin"></div>
+        <textarea class="notes-area" id="notes-area" placeholder="start writing... type french or english words to see translations pop up below ✨" oninput="onNoteEdit()"></textarea>
+      </div>
+
+      <div class="note-toolbar">
+        <button class="note-tool-btn" onclick="deleteCurrentNote()">🗑 delete</button>
+        <span class="note-hint">💡 detected words show translations below</span>
+      </div>
+      <div class="word-pill-wrap" id="word-pills"></div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+  <p style="font-family:'Press Start 2P',monospace;font-size:0.4rem;color:var(--muted);margin-bottom:0.75rem">KEY GRAMMAR REFERENCE</p>
+  <div class="card" style="margin-top:1rem">
+    <div style="font-weight:800;margin-bottom:0.75rem">📌 Key Grammar Rules</div>
+    <div style="font-size:0.85rem;line-height:1.9;color:#444">
+      <strong>Articles:</strong> le/la (the), un/une (a) — gender matters in French!<br>
+      <strong>Être (to be):</strong> je suis, tu es, il/elle est, nous sommes, vous êtes, ils/elles sont<br>
+      <strong>Avoir (to have):</strong> j'ai, tu as, il/elle a, nous avons, vous avez, ils/elles ont<br>
+      <strong>Negation:</strong> ne...pas wraps the verb — "je ne parle pas"<br>
+      <strong>Questions:</strong> Est-ce que...? or inversion (Parlez-vous français?)<br>
+      <strong>Adjective agreement:</strong> adjectives match gender — petit/petite, grand/grande
+    </div>
+  </div>
+  <div class="card">
+    <div style="font-weight:800;margin-bottom:0.75rem">🗣️ Essential Phrases</div>
+    <div style="font-size:0.85rem;line-height:1.9;color:#444">
+      Comment vous appelez-vous? / Comment tu t'appelles? — What's your name?<br>
+      Je m'appelle... — My name is...<br>
+      Quel âge avez-vous? — How old are you?<br>
+      D'où venez-vous? — Where are you from?<br>
+      Je ne comprends pas — I don't understand<br>
+      Pouvez-vous répéter? — Can you repeat?<br>
+      S'il vous plaît / s'il te plaît — Please<br>
+      Enchanté(e) — Nice to meet you
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ── DICTIONARY ── -->
+<div class="section" id="section-dictionary">
+<div class="section-inner">
+  <div class="s-header">
+    <div class="s-eyebrow">FRENCH ↔ ENGLISH</div>
+    <div class="s-title">Dictionary 📖</div>
+  </div>
+  <div class="dict-search-wrap">
+    <span class="dict-search-icon">🔍</span>
+    <input type="text" class="dict-search" id="dict-input" placeholder="search a word in French or English..." oninput="searchDict(this.value)">
+  </div>
+  <div class="dict-results" id="dict-results">
+    <p style="font-size:0.85rem;color:var(--muted);text-align:center;padding:2rem 0">type a word to search 🐸</p>
+  </div>
+</div>
+</div>
+
+<!-- ── QUIZ ── -->
+<div class="section" id="section-quiz">
+<div class="section-inner">
+  <div class="s-header">
+    <div class="s-eyebrow">TEST YOURSELF</div>
+    <div class="s-title">Quiz time 🎯</div>
+  </div>
+  <div class="quiz-score" id="quiz-score">score: 0 / 0</div>
+  <div class="quiz-question">
+    <div class="quiz-q-sub" id="quiz-type">translate to english</div>
+    <div class="quiz-q-text" id="quiz-q"></div>
+  </div>
+  <div class="quiz-feedback" id="quiz-feedback"></div>
+  <div class="quiz-options" id="quiz-opts"></div>
+  <div style="text-align:center">
+    <button class="btn-primary" id="quiz-next" onclick="nextQuiz()" style="display:none">next →</button>
+  </div>
+</div>
+</div>
+
+<!-- ── STUDY ROOM ── -->
+<div class="section" id="section-room">
+  <div class="room-scene">
+    <!-- window with rain -->
+    <div class="room-window" id="room-window"></div>
+    <!-- bookshelf -->
+    <div class="room-shelf">
+      <div class="shelf-row">
+        <div class="book" style="background:#e74c3c;height:26px"></div>
+        <div class="book" style="background:#3498db;height:22px"></div>
+        <div class="book" style="background:#2ecc71;height:24px"></div>
+        <div class="book" style="background:#f39c12;height:20px"></div>
+      </div>
+      <div class="shelf-row">
+        <div class="book" style="background:#9b59b6;height:22px"></div>
+        <div class="book" style="background:#1abc9c;height:26px"></div>
+        <div class="book" style="background:#e67e22;height:18px"></div>
+        <div class="book" style="background:#e91e63;height:24px"></div>
+      </div>
+    </div>
+    <!-- lamp -->
+    <div class="room-lamp">
+      <div class="lamp-head"></div>
+      <div class="lamp-pole"></div>
+      <div class="lamp-base"></div>
+      <div class="lamp-glow"></div>
+    </div>
+    <!-- desk surface -->
+    <div class="room-desk">
+      <!-- laptop -->
+      <div class="room-laptop">
+        <div class="laptop-screen">
+          <span style="font-size:0.5rem;letter-spacing:0.05em">FR<br>101</span>
+        </div>
+        <div class="laptop-base"></div>
+      </div>
+      <!-- notebook -->
+      <div class="room-notebook"></div>
+    </div>
+    <!-- frog + bubble -->
+    <div class="room-frog-wrap" onclick="showRoomBubble(roomFrogLines[Math.floor(Math.random()*roomFrogLines.length)])">
+      <div id="room-bubble"></div>
+      <div id="room-frog">🐸</div>
+    </div>
+  </div>
+
+  <!-- controls -->
+  <div class="room-controls">
+    <div class="timer-card">
+      <div class="timer-label" id="timer-label">📚 focus time</div>
+      <div id="timer-display">25:00</div>
+      <div class="timer-btns">
+        <button class="timer-btn" id="timer-btn" onclick="toggleTimer()">▶ start</button>
+        <button class="timer-btn secondary" onclick="resetTimer()">↺ reset</button>
+        <!-- ADD YOUR OWN AUDIO FILE PATH BELOW IF DESIRED -->
+        <audio id="local-audio" src="C418 - Dry Hands - Minecraft Volume Alpha.mp3" loop></audio>
+        <button id="music-btn" onclick="toggleMusic()">🎵 music off</button>
+      </div>
+      <div class="session-count" id="session-count">sessions completed: 0</div>
+    </div>
+  </div>
+  <iframe id="music-iframe" width="0" height="0" frameborder="0" allow="autoplay"></iframe>
+</div>
+
+<div class="section" id="section-messages">
+<div class="section-inner">
+  <div class="s-header">
+    <div class="s-eyebrow">UNLOCK AS YOU LEVEL UP</div>
+    <div class="s-title">Messages 💌</div>
+  </div>
+  <div id="messages-list"></div>
+</div>
+</div>
+
+<div class="section" id="section-chat">
+<div class="section-inner">
+  <div class="s-header">
+    <div class="s-eyebrow">AI CHAT</div>
+    <div class="s-title">Ask the Tutor 🐸</div>
+  </div>
+  <div class="chat-wrap">
+    <div class="chat-header">
+      <div class="chat-avatar">🐸</div>
+      <div>
+        <div class="chat-name">Frog (your french tutor)</div>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="msg bot">bonjour! ask me anything about French and i'll help you. tu peux le faire! 🐸💚</div>
+    </div>
+    <div class="chat-prompts">
+      <div class="prompt-pill" onclick="sendPromptChat('explain être vs avoir')">être vs avoir?</div>
+      <div class="prompt-pill" onclick="sendPromptChat('how do French articles work?')">articles?</div>
+      <div class="prompt-pill" onclick="sendPromptChat('give me 5 key phrases for French finals')">key phrases</div>
+      <div class="prompt-pill" onclick="sendPromptChat('quiz me on French vocabulary')">quiz me!</div>
+      <div class="prompt-pill" onclick="sendPromptChat('explain French negation ne...pas')">negation?</div>
+    </div>
+    <div class="chat-input-wrap">
+      <input type="text" class="chat-input" id="chat-input" placeholder="ask anything about French..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" id="chat-send" onclick="sendChat()">➤</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<footer class="footer">
+        <p>© 2026 Étudie le Français 🐸. All rights reserved by Taher Abubaker.</p>
+</footer>
+
+<script>
+// rain effect
+window.addEventListener('load', () => {
+  const win = document.getElementById('room-window');
+  for (let i = 0; i < 8; i++) {
+    const drop = document.createElement('div');
+    drop.className = 'rain-drop';
+    drop.style.left = Math.random() * 100 + '%';
+    drop.style.height = (8 + Math.random() * 12) + 'px';
+    drop.style.animationDuration = (0.6 + Math.random() * 0.8) + 's';
+    drop.style.animationDelay = Math.random() * 1.5 + 's';
+    win.appendChild(drop);
+  }
+  // sync room frog to pet cosmetic
+  const cos = frogCosmetics[Math.min(getLevel()-1, frogCosmetics.length-1)];
+  document.getElementById('room-frog').textContent = cos.hat ? cos.emoji + cos.hat : cos.emoji;
+});
+</script>
+<script src="js.js"></script>
+</body>
+</html>

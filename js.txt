@@ -1,0 +1,4 @@
+1- then go and add the backend and a login way and logout but allso note that 
+   u are using netlify to host this and be using the groq ai too and got that backend file.
+2- make the ui better like ur notes app
+3- add icons and not emojis
