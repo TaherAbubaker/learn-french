@@ -206,6 +206,102 @@ function showSection(id, btn) {
   if (id === 'messages') renderMessages();
 }
 
+(async () => {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session) {
+    document.getElementById('auth-gate').style.display = 'none';
+  }
+})();
+
+// ── AUTHENTICATION ──
+function switchAuthBox(id) {
+  if (id === "login") {
+    document.getElementById('register').style.display = 'none';
+    document.getElementById('login').style.display = 'block';
+  }
+  if (id === "register") {
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('register').style.display = 'block';
+  }
+}
+
+document.getElementById("login-btn").addEventListener("click", async () => {
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+
+  const authError = document.getElementById("auth-error");
+  authError.textContent = "";
+
+  if (email === "" || password === "") {
+    authError.textContent = "Please fill in both fields.";
+    return;
+  }
+
+  if (password.length < 6) {
+    authError.textContent = "Password must be at least 6 characters.";
+    return;
+  }
+
+  const { error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    authError.textContent = error.message;
+  } else {
+    document.getElementById('auth-gate').style.display = 'none';
+  }
+
+});
+
+document.getElementById("register-btn").addEventListener("click", async () => {
+  const email = document.getElementById("register-email").value.trim();
+  const password = document.getElementById("register-password").value;
+  const name = document.getElementById("register-name").value.trim();
+
+  const authError = document.getElementById("auth-error");
+  authError.textContent = "";
+
+  if (email === "" || password === "" || name === "") {
+    authError.textContent = "Please fill in all fields.";
+    return;
+  }
+
+  if (password.length < 6) {
+    authError.textContent = "Password must be at least 6 characters.";
+    return;
+  }
+
+  const { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password,
+  });
+
+  if (error) {
+    authError.textContent = error.message;
+    return;
+  }
+
+  const { error: profileError } = await supabaseClient
+    .from("profiles")
+    .update({ username: name })
+    .eq("id", data.user.id);
+
+  if (profileError) {
+    authError.textContent = profileError.message;
+    return;
+  }
+
+  if (data.session) {
+    document.getElementById('auth-gate').style.display = 'none';
+  } else {
+    authError.style.color = "green";
+    authError.textContent = "Account created! Check your email to confirm before logging in.";
+  }
+
+});
+
 // ── XP + REWARDS ──
 function gainXP(amount) {
   const prevLevel = getLevel();
@@ -315,7 +411,7 @@ let notesData = JSON.parse(localStorage.getItem('fsh_notes') || '[]');
 let currentNoteId = null;
 let noteSaveTimeout = null;
 
-function uid() { return 'n' + Date.now() + Math.random().toString(36).slice(2,7); }
+function uid() { return 'n' + Date.now() + Math.random().toString(36).slice(2, 7); }
 function saveNotesData() { localStorage.setItem('fsh_notes', JSON.stringify(notesData)); }
 
 function createNewNote() {
@@ -331,7 +427,7 @@ function createNewNote() {
 function renderNotesList(filter) {
   const wrap = document.getElementById('notes-list');
   if (!wrap) return;
-  let list = [...notesData].sort((a,b) => b.updated - a.updated);
+  let list = [...notesData].sort((a, b) => b.updated - a.updated);
   if (filter && filter.trim()) {
     const q = filter.toLowerCase();
     list = list.filter(n => (n.title + ' ' + n.content).toLowerCase().includes(q));
@@ -343,12 +439,12 @@ function renderNotesList(filter) {
   wrap.innerHTML = list.map(n => {
     const title = n.title.trim() || 'untitled note';
     const preview = n.content.trim().slice(0, 40) || 'empty note...';
-    const date = new Date(n.updated).toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    const date = new Date(n.updated).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     return '<div class="note-item ' + (n.id === currentNoteId ? 'active' : '') + '" onclick="selectNote(\'' + n.id + '\')">' +
       '<div class="note-item-title">' + escapeHtml(title) + '</div>' +
       '<div class="note-item-preview">' + escapeHtml(preview) + '</div>' +
       '<div class="note-item-date">' + date + '</div>' +
-    '</div>';
+      '</div>';
   }).join('');
 }
 
@@ -383,9 +479,9 @@ function updateNoteMeta(note) {
 function timeAgoLabel(ts) {
   const diff = Date.now() - ts;
   if (diff < 10000) return 'just now';
-  if (diff < 60000) return Math.floor(diff/1000) + 's ago';
-  if (diff < 3600000) return Math.floor(diff/60000) + 'm ago';
-  return new Date(ts).toLocaleDateString('en-US', { month:'short', day:'numeric' });
+  if (diff < 60000) return Math.floor(diff / 1000) + 's ago';
+  if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+  return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 function onNoteEdit() {
@@ -416,7 +512,7 @@ function deleteCurrentNote() {
   document.getElementById('word-pills').innerHTML = '';
   document.getElementById('note-meta').textContent = '0 words';
   renderNotesList(document.getElementById('notes-search').value);
-  if (notesData.length) selectNote([...notesData].sort((a,b)=>b.updated-a.updated)[0].id);
+  if (notesData.length) selectNote([...notesData].sort((a, b) => b.updated - a.updated)[0].id);
 }
 
 const noteTranslations = {};
@@ -442,7 +538,7 @@ function detectWords(text) {
 function initNotesApp() {
   renderNotesList();
   if (notesData.length) {
-    selectNote([...notesData].sort((a,b)=>b.updated-a.updated)[0].id);
+    selectNote([...notesData].sort((a, b) => b.updated - a.updated)[0].id);
   } else {
     createNewNote();
   }
@@ -694,9 +790,9 @@ let musicPlaying = false;
 function toggleMusic() {
   const btn = document.getElementById('music-btn');
   const audio = document.getElementById('local-audio');
-  
+
   musicPlaying = !musicPlaying;
-  
+
   if (musicPlaying) {
     audio.play();
     btn.textContent = '🎵 music on';

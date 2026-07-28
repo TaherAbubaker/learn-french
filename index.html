@@ -3,11 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Étudie le Français 🐸</title>
+<title>French Study Hub 🐸</title>
 <link rel="stylesheet" href="css.css">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
+
+
+<!-- AUTHENTICATION -->
+<div class = "auth-ui" id="auth-gate">
+    <div class="auth-box" id="register">
+        <h1>French Study Hub</h1>
+        <p>Join the community</p>
+        <input type="text" placeholder="Full Name" id="register-name" style="margin-bottom:0.5rem;">
+        <input type="email" placeholder="Email" id="register-email">
+        <input type="password" placeholder="Password" id="register-password">
+        <button id="register-btn" class="btn-primary">Register</button>
+        <p>Already have an account? <a href="#" onclick="switchAuthBox('login')">Login here</a></p>
+    </div>
+    <div class="auth-box" id="login" style="display:none;">
+        <h1>Welcome Back</h1>
+        <p>Login to continue</p>
+        <input type="email" placeholder="Email" id="login-email">
+        <input type="password" placeholder="Password" id="login-password">
+        <button id="login-btn" class="btn-primary">Login</button>
+        <p>Don't have an account? <a href="#" onclick="switchAuthBox('register')">Register here</a></p>
+    </div>
+    <p class="auth-error" id="auth-error"></p>
+</div>
 
 <!-- NAV -->
 <nav>
@@ -340,6 +363,8 @@ window.addEventListener('load', () => {
   document.getElementById('room-frog').textContent = cos.hat ? cos.emoji + cos.hat : cos.emoji;
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script src="js.js"></script>
 </body>
 </html>
