@@ -302,6 +302,17 @@ document.getElementById("register-btn").addEventListener("click", async () => {
 
 });
 
+document.getElementById("logout-btn").addEventListener("click" , async ()=>{
+  const {error} = await supabaseClient.auth.signOut();
+  if(error){
+    console.log(error)
+  }else{
+    document.getElementById("auth-gate").style.display = "flix";
+    window.location.reload();
+
+  }
+});
+
 // ── XP + REWARDS ──
 function gainXP(amount) {
   const prevLevel = getLevel();

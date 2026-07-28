@@ -92,6 +92,22 @@ nav {
   border-bottom-color: var(--sage-dark)
 }
 
+.logout {
+  margin-left: auto;
+  margin-right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  padding: 1rem 0.9rem;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
 /* ── SECTIONS ── */
 .section {
   display: none;
