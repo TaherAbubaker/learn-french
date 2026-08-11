@@ -171,8 +171,8 @@ const frogCosmetics = [
 const unlockMessages = [];
 
 // ── STATE ──
-let xp = parseInt(localStorage.getItem('fsh_xp') || '0');
-let unlockedMessages = JSON.parse(localStorage.getItem('fsh_unlocked') || '[]');
+let xp = 0;
+let unlockedMessages = []; // stays local-only, not synced — fine as-is
 const xpPerLevel = 100;
 
 function getLevel() { return Math.floor(xp / xpPerLevel) + 1; }
@@ -210,6 +210,7 @@ function showSection(id, btn) {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (session) {
     document.getElementById('auth-gate').style.display = 'none';
+    await loadUserXP();
   }
 })();
 
@@ -251,6 +252,7 @@ document.getElementById("login-btn").addEventListener("click", async () => {
     authError.textContent = error.message;
   } else {
     document.getElementById('auth-gate').style.display = 'none';
+    await loadUserXP();
   }
 
 });
@@ -314,6 +316,36 @@ document.getElementById("logout-btn").addEventListener("click" , async ()=>{
 });
 
 // ── XP + REWARDS ──
+
+async function loadUserXP() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  const { data, error } = await supabaseClient
+    .from("user_xp")
+    .select("xp")
+    .eq("user_id", user.id)
+    .maybeSingle(); // returns null instead of throwing if no row exists yet
+
+  if (error) {
+    console.log("Error loading XP:", error);
+    return;
+  }
+
+  xp = data ? data.xp : 0;
+  updatePetUI();
+}
+
+async function saveState() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  const { error } = await supabaseClient
+    .from("user_xp")
+    .update({ xp: xp })
+    .eq("user_id", user.id);
+
+  if (error) console.log("Error saving XP:", error);
+}
+
 function gainXP(amount) {
   const prevLevel = getLevel();
   xp += amount;
