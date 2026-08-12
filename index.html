@@ -26,8 +26,25 @@
         <input type="email" placeholder="Email" id="login-email">
         <input type="password" placeholder="Password" id="login-password">
         <button id="login-btn" class="btn-primary">Login</button>
+        <p><a href="#" onclick="switchAuthBox('forgot')">Forgot password?</a></p>
         <p>Don't have an account? <a href="#" onclick="switchAuthBox('register')">Register here</a></p>
     </div>
+    <div class="auth-box" id="forgot" style="display:none;">
+    <h1>Reset Password</h1>
+    <p>Enter your email and we'll send a reset link</p>
+    <input type="email" placeholder="Email" id="forgot-email">
+    <p class="auth-error" id="forgot-error"></p>
+    <button id="forgot-btn" class="btn-primary">Send Reset Link</button>
+    <p>Remembered it? <a href="#" onclick="switchAuthBox('login')">Login here</a></p>
+</div>
+<div class="auth-box" id="reset" style="display:none;">
+    <h1>Set New Password</h1>
+    <p>Enter your new password below</p>
+    <input type="password" placeholder="New password" id="reset-password">
+    <input type="password" placeholder="Confirm password" id="reset-password-confirm">
+    <p class="auth-error" id="reset-error"></p>
+    <button id="reset-btn" class="btn-primary">Update Password</button>
+</div>
     <p class="auth-error" id="auth-error"></p>
 </div>
 

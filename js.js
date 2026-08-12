@@ -1038,14 +1038,8 @@ function showSection(id, btn) {
 
 // ── AUTHENTICATION ──
 function switchAuthBox(id) {
-  if (id === "login") {
-    document.getElementById("register").style.display = "none";
-    document.getElementById("login").style.display = "block";
-  }
-  if (id === "register") {
-    document.getElementById("login").style.display = "none";
-    document.getElementById("register").style.display = "block";
-  }
+  document.querySelectorAll('.auth-box').forEach(box => box.style.display = 'none');
+  document.getElementById(id).style.display = 'block';
 }
 
 document.getElementById("login-btn").addEventListener("click", async () => {
@@ -1123,6 +1117,68 @@ document.getElementById("register-btn").addEventListener("click", async () => {
     authError.textContent =
       "Account created! Check your email to confirm before logging in.";
   }
+});
+
+document.getElementById("forgot-btn").addEventListener("click", async () => {
+  const email = document.getElementById("forgot-email").value.trim();
+  const forgotError = document.getElementById("forgot-error");
+  forgotError.textContent = "";
+
+  if (email === "") {
+    forgotError.textContent = "Please enter your email.";
+    return;
+  }
+
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + "/index.html"
+  });
+
+  if (error) {
+    forgotError.textContent = error.message;
+    return;
+  }
+
+  forgotError.style.color = "green";
+  forgotError.textContent = "If that email is registered, a reset link has been sent.";
+});
+
+// Supabase fires this automatically when someone lands here via a reset link
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === "PASSWORD_RECOVERY") {
+    document.getElementById('auth-gate').style.display = 'flex';
+    switchAuthBox('reset');
+  }
+});
+
+document.getElementById("reset-btn").addEventListener("click", async () => {
+  const newPassword = document.getElementById("reset-password").value;
+  const confirmPassword = document.getElementById("reset-password-confirm").value;
+  const resetError = document.getElementById("reset-error");
+  resetError.textContent = "";
+
+  if (newPassword.length < 6) {
+    resetError.textContent = "Password must be at least 6 characters.";
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    resetError.textContent = "Passwords do not match.";
+    return;
+  }
+
+  const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+
+  if (error) {
+    resetError.textContent = error.message;
+    return;
+  }
+
+  resetError.style.color = "green";
+  resetError.textContent = "Password updated! Logging you in...";
+
+  setTimeout(() => {
+    document.getElementById('auth-gate').style.display = 'none';
+  }, 1500);
 });
 
 document.getElementById("logout-btn").addEventListener("click", async () => {
