@@ -568,13 +568,17 @@ nav {
   background: var(--sage-dark);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 10px 14px;
   font-family: 'Nunito', sans-serif;
   font-weight: 800;
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
 }
 
 .notes-new-btn:hover {
