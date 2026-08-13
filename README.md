@@ -1,138 +1,71 @@
--- ============================================================
--- FRENCH STUDY HUB — DATABASE SCHEMA
--- Run this in the Supabase SQL Editor for a fresh project setup
--- ============================================================
+# French Study Hub 🐸
 
--- =========================
--- PROFILES
--- =========================
-create table public.profiles (
-    id uuid references auth.users(id) on delete cascade primary key,
-    email text,
-    username text,
-    created_at timestamp with time zone default now()
-);
+A full-stack French learning app — flashcards, a searchable dictionary, smart notes, quizzes, a focus-timer study room, and an AI tutor, all backed by a real authenticated Supabase backend.
 
--- =========================
--- XP TABLE
--- =========================
-create table public.user_xp (
-    id uuid default gen_random_uuid() primary key,
-    user_id uuid
-        references auth.users(id)
-        on delete cascade
-        unique,
-    xp integer default 0,
-    level integer default 1,
-    created_at timestamp with time zone default now()
-);
+**Live app:** [learnfrench1.netlify.app](https://learnfrench1.netlify.app)
 
--- =========================
--- NOTES
--- =========================
-create table public.notes (
-    id uuid default gen_random_uuid() primary key,
-    user_id uuid
-        references auth.users(id)
-        on delete cascade,
-    title text default 'Untitled',
-    content text default '',
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
-);
+## Features
 
--- =========================
--- CHAT USAGE (server-side rate limiting)
--- =========================
-create table public.chat_usage (
-    user_id uuid references auth.users(id) on delete cascade,
-    usage_date date not null default current_date,
-    message_count integer not null default 0,
-    primary key (user_id, usage_date)
-);
+- 🃏 **Flashcards** — categorized vocab decks with flip-to-reveal translations and spaced practice
+- 📝 **Smart Notes** — free-form notebook with auto-detected French/English word translations
+- 📖 **Dictionary** — instant French ↔ English search
+- 🎯 **Quiz mode** — self-testing with score tracking
+- 🌿 **Study Room** — a cozy focus-timer environment with ambient rain and background music
+- 🤖 **AI Tutor** — chat with an AI French tutor (Groq / Llama 3.3), rate-limited per user
+- 🔐 **Full authentication** — signup, login, logout, and password reset via Supabase Auth
+- ⭐ **XP & leveling system** — persisted per user, not just local to one browser
 
--- =========================
--- ENABLE RLS
--- =========================
-alter table public.profiles enable row level security;
-alter table public.user_xp enable row level security;
-alter table public.notes enable row level security;
-alter table public.chat_usage enable row level security;
+## Tech stack
 
--- =========================
--- PROFILE POLICIES
--- =========================
-create policy "Users can view own profile"
-on public.profiles for select
-using (auth.uid() = id);
+| Layer | Tech |
+|---|---|
+| Frontend | Vanilla HTML/CSS/JavaScript |
+| Backend / Database | [Supabase](https://supabase.com) (Postgres + Auth + Row Level Security) |
+| AI | [Groq](https://groq.com) (Llama 3.3 70B) via a secured Netlify serverless function |
+| Hosting | [Netlify](https://netlify.com) |
 
-create policy "Users can update own profile"
-on public.profiles for update
-using (auth.uid() = id);
+## Security
 
--- =========================
--- XP POLICIES
--- =========================
-create policy "Users can view own xp"
-on public.user_xp for select
-using (auth.uid() = user_id);
+- **Row Level Security (RLS)** on every table — each user can only ever read/write their own XP and notes, enforced at the database level, not just hidden in the UI
+- **Server-side auth verification** on the AI chat endpoint — every request is validated against a real Supabase session before it's allowed to reach the AI provider, preventing anonymous abuse
+- **Server-side rate limiting** on chat usage, tracked per user per day in the database — not just a client-side counter that can be bypassed
+- **No secrets in the client** — the AI provider's API key lives only in Netlify's serverless environment, never exposed to the browser
 
-create policy "Users can update own xp"
-on public.user_xp for update
-using (auth.uid() = user_id);
+## Running locally
 
-create policy "Users can insert own xp"
-on public.user_xp for insert
-with check (auth.uid() = user_id);
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/TaherAbubaker/learn-french.git
+   cd learn-french
+   ```
 
--- =========================
--- NOTES POLICIES
--- =========================
-create policy "Users can read own notes"
-on public.notes for select
-using (auth.uid() = user_id);
+2. Install dependencies (for the serverless function):
+   ```bash
+   npm install
+   ```
 
-create policy "Users can create own notes"
-on public.notes for insert
-with check (auth.uid() = user_id);
+3. Create a `.env` file in the project root:
+   ```
+   GROQ_API_KEY=your_groq_api_key
+   SUPABASE_URL=your_supabase_project_url
+   SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
 
-create policy "Users can update own notes"
-on public.notes for update
-using (auth.uid() = user_id);
+4. Run with the Netlify CLI (required for the AI tutor function to work locally):
+   ```bash
+   netlify dev
+   ```
 
-create policy "Users can delete own notes"
-on public.notes for delete
-using (auth.uid() = user_id);
+5. Open the local URL shown in the terminal (usually `http://localhost:8888`).
 
--- =========================
--- CHAT USAGE POLICIES
--- =========================
-create policy "Users can view own chat usage"
-on public.chat_usage for select
-using (auth.uid() = user_id);
+## Database setup
 
-create policy "Users can insert own chat usage"
-on public.chat_usage for insert
-with check (auth.uid() = user_id);
+The full schema (tables, RLS policies, and the auto-profile-creation trigger) is in [`schema.sql`](./schema.sql). Run it in your Supabase project's SQL Editor before first use.
 
-create policy "Users can update own chat usage"
-on public.chat_usage for update
-using (auth.uid() = user_id);
+## Author
 
--- =========================
--- AUTO CREATE PROFILE + XP
--- AFTER SIGNUP
--- =========================
-create or replace function public.handle_new_user()
-returns trigger language plpgsql security definer as $$
-begin
-  insert into public.profiles(id, email) values (new.id, new.email);
-  insert into public.user_xp(user_id) values (new.id);
-  return new;
-end;
-$$;
+Built by **Taher Abubaker** — [GitHub](https://github.com/TaherAbubaker) · [LinkedIn](https://linkedin.com/in/taabubaker)
 
-create trigger on_auth_user_created
-after insert on auth.users
-for each row
-execute procedure public.handle_new_user();
+## License
+
+This project is available for reference and learning purposes. Feel free to fork it for your own study tools.
